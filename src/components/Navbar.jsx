@@ -27,6 +27,10 @@ function Navbar() {
                             <Link className={`nav-link ${location.pathname === '/about' ? "active" : ""}`} aria-current="page" to="/about">About</Link>
                         </li>
                     </ul>
+                    <div>
+                        <Link className="btn btn-primary mx-2" role="button" to='/login'  aria-disabled="true">LogIn</Link>
+                        <Link className="btn btn-primary mx-2" role="button" to='/signup' aria-disabled="true">SignUp</Link>
+                    </div>
                 </div>
             </div>
         </nav>

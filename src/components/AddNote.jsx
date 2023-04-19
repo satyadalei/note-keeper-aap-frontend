@@ -27,18 +27,18 @@ export const AddNote = () => {
         <form>
           <div className="mb-3">
             <label htmlFor="title" className="form-label">Title</label>
-            <input onChange={handleInput} type="text" className="form-control" id="title" name='title' aria-describedby="title" value={note.title} />
+            <input onChange={handleInput} type="text" className="form-control" id="title" name='title' aria-describedby="title" value={note.title} minLength={5} required/>
           </div>
           <div className="mb-3">
             <label htmlFor="tag" className="form-label">Tag</label>
-            <input onChange={handleInput} type="text" className="form-control" id="tag" name="tag" value={note.tag} />
+            <input onChange={handleInput} type="text" className="form-control" id="tag" name="tag" value={note.tag} minLength={5} required />
           </div>
 
           <div className="mb-3">
             <label htmlFor="desc" className="form-label">Description</label>
-            <input onChange={handleInput} type="text" className="form-control" id="desc" name="description" value={note.description} />
+            <input onChange={handleInput} type="text" className="form-control" id="desc" name="description" value={note.description} minLength={5} required />
           </div>
-          <button type="submit" onClick={handleAddNote} className="btn btn-primary">Submit</button>
+          <button disabled={ note.title.length < 5 || note.description.length < 5 } type="submit" onClick={handleAddNote} className="btn btn-primary">Submit</button>
         </form>
       </div>
     </>
