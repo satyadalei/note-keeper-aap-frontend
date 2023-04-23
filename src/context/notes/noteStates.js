@@ -9,17 +9,19 @@ const NoteState = (props) => {
 
   //----------- First fetch all notes from data base ---------------------
   const fetchAllNotes = async ()=>{
-      const url = `${host}api/note/fetchallnotes`; 
-      const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "auth-token":
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MzhmMDJlYmVjNzYxYWE1YTk1NzM4ZiIsImlhdCI6MTY4MTQ1MzEwM30.74ieEKJGr4aTSiAQfD-Cv-DPGYZ9DHdvY8XTd17m-SA",
-          }
-      });
-      const json = await response.json();
-      setnotes(json); // after fetching all notes store it in a state
+      const url = `${host}api/note/fetchallnotes`;
+        // if token exists
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token":
+                localStorage.getItem("authToken"),
+            }
+        });
+        const json = await response.json();
+        setnotes(json); 
+        // after fetching all notes store it in a state
   }
 
   //---------------------- Add note to data base & display in page-----------
@@ -32,13 +34,12 @@ const NoteState = (props) => {
       headers: {
         "Content-Type": "application/json",
         "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MzhmMDJlYmVjNzYxYWE1YTk1NzM4ZiIsImlhdCI6MTY4MTQ1MzEwM30.74ieEKJGr4aTSiAQfD-Cv-DPGYZ9DHdvY8XTd17m-SA",
+          localStorage.getItem("authToken"),
       },
       body: JSON.stringify(data), // sending data to server
     });
-     const savedNote = await response.json();
+    const savedNote = await response.json();
     setnotes(notes.concat(savedNote));
-
   }
 
   //------------------- update/ edit note --------------------
@@ -53,7 +54,7 @@ const NoteState = (props) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MzhmMDJlYmVjNzYxYWE1YTk1NzM4ZiIsImlhdCI6MTY4MTQ1MzEwM30.74ieEKJGr4aTSiAQfD-Cv-DPGYZ9DHdvY8XTd17m-SA"
+        "auth-token": localStorage.getItem("authToken")
       },
       body: JSON.stringify(data),
     });
@@ -69,20 +70,6 @@ const NoteState = (props) => {
         break;
       }
     }
-    // const newEditedNote = notes.filter((note,index)=>{
-    //     // check if previous id is same as edited id then replace newly saved 
-    //   if(note._id === json._id){
-    //     console.log(note);
-    //     console.log(index);
-    //     //return that saved note
-    //     console.log(json);
-    //     return json;
-    //   }else{
-    //       // otherwise return same element
-    //       console.log(note);
-    //       return note;
-    //   }
-    // })
     // //set all notes again
     setnotes(newData);
     // console.log(newEditedNote);
@@ -94,7 +81,7 @@ const NoteState = (props) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MzhmMDJlYmVjNzYxYWE1YTk1NzM4ZiIsImlhdCI6MTY4MTQ1MzEwM30.74ieEKJGr4aTSiAQfD-Cv-DPGYZ9DHdvY8XTd17m-SA"
+        "auth-token": localStorage.getItem("authToken")
       }
     });
     const newNotes = notes.filter((note)=>{
@@ -102,6 +89,8 @@ const NoteState = (props) => {
     });
     setnotes(newNotes);
   }
+
+
   return (
     <NoteContext.Provider value={{ notes, addNote, editNote, deleteNote,fetchAllNotes}} >
       {props.children}

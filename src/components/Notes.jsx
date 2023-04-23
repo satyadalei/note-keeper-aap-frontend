@@ -2,13 +2,27 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import noteContext from '../context/notes/noteContext';
 import NoteItem from './NoteItem';
 import { AddNote } from './AddNote';
+import AlertContext from '../context/alerts/alertContext';
+import { useNavigate } from 'react-router-dom';
+import LogInContext from '../context/loginStatus/loginContext';
+
 
 function Notes() {
   const context = useContext(noteContext);
+  const logInContext = useContext(LogInContext);
+  const {logInStatus} = logInContext;
   const { notes, fetchAllNotes, editNote } = context;
+  const alertContext = useContext(AlertContext);
+  const {setAlert} = alertContext;
+  const navigate = useNavigate();
   useEffect(() => {
-    fetchAllNotes();
-  }, []);
+    if (logInStatus){
+      fetchAllNotes();
+    }else{
+      navigate("/login");
+    }
+    
+  },[fetchAllNotes, logInStatus, navigate]);
   const ref = useRef(null);
   // show default note credentials after button is clicked
   const [currentEditNote, setCurrentEditNote] = useState({
@@ -31,6 +45,10 @@ function Notes() {
     // then send saved data to notestate to save in data base
     editNote(currentEditNote);
     ref.current.click();  // close update modal 
+    setAlert({
+      message : "Saved changes Successfully",
+      alertType : "success"
+    })
   }
 
   return (

@@ -1,7 +1,15 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import LogInContext from '../context/loginStatus/loginContext';
+import UserContext from '../context/userDetails/userContext';
+
 const Login = () => {
-    // store meail and password using states
+    const loginContext = useContext(LogInContext);
+    const {setLogInStatus} = loginContext;
+
+    const userContext = useContext(UserContext);
+    const {setUserId,getUserDetails} = userContext;
+    // store email and password using states
     const [credentials, setCredentials] = useState({email: "", password :""})
     // update email and password onchange!!
     const handleCredentialsChange = (e)=>{
@@ -24,14 +32,18 @@ const Login = () => {
           body: JSON.stringify(credentials)
         });
         const json = await getResponse.json(); // response gives -- success : true & tote "hfwsj...."
-        console.log(json);
         // set email & password to empty
         setCredentials({email: "", password :""});
         // redirect user if login successful
         if(json.success) {
             // first save token in local Storage
-            localStorage.getItem(json.token);
-            //Redirect user page ---> to redirect use --> useHistory
+            console.log(json.token);
+            localStorage.setItem("authToken",json.token);
+            // user loedin successfully now set login status true
+            setLogInStatus(true);
+            // setUserId(json.userId);
+            localStorage.setItem("userId",json.userId);
+            getUserDetails();
             navigate("/");
         }else{
             // show an elert
@@ -50,7 +62,7 @@ const Login = () => {
                         <label htmlFor="password" className="form-label">Password</label>
                         <input onChange={handleCredentialsChange} value={credentials.password} type="password" name='password' className="form-control" id="password"/>
                     </div>
-                    {/* on submit handle event separately and run a custome function */}
+                    {/* on submit hansdle event separately and run a custome function */}
                     <button  type="submit" className="btn btn-primary">Submit</button>
                 </form>
             </div>

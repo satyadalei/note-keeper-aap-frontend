@@ -1,13 +1,30 @@
-import React from 'react'
-import {Link, useLocation } from "react-router-dom";
+import React, { useEffect } from 'react'
+import {Link, useLocation, useNavigate } from "react-router-dom";
+import LogInContext from '../context/loginStatus/loginContext';
+import { useContext } from 'react';
+import UserContext from '../context/userDetails/userContext';
+
 function Navbar() {
-
     let location = useLocation();
-    // React.useEffect(() => {
-    //     console.log(location.pathname);
-    // }, [location]);
-  
+    const navigate = useNavigate();
+    const loginContext = useContext(LogInContext);
+    const {logInStatus, setLogInStatus} = loginContext;
 
+    const userContext = useContext(UserContext);
+    const {userDetails,getUserDetails} = userContext;
+    
+    useEffect(()=>{
+        if (logInStatus) {
+            getUserDetails()
+        }
+    },[]);
+    const handleLogOut = async ()=>{
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userId");
+        setLogInStatus(false); // set login status to false & redirect to home page or login page
+        // useNavigate()('/');
+        navigate('/');
+    }
     return (
         <nav className="navbar navbar-expand-lg bg-body-tertiary bg-dark" data-bs-theme="dark" >
             <div className="container-fluid">
@@ -26,10 +43,33 @@ function Navbar() {
                             {/* <Link className="nav-link " aria-current="page" to="/about">About</Link> */}
                             <Link className={`nav-link ${location.pathname === '/about' ? "active" : ""}`} aria-current="page" to="/about">About</Link>
                         </li>
+                        {/* Show user name if it is already loged In */}
+                        {
+                            logInStatus ?
+                            <>
+                            <li style={{color:"white",marginLeft:"100px"}} >
+                                <h6>Hello {userDetails.name} </h6>
+                                <span>{userDetails.email}</span>
+                            </li>
+                            </>
+                            :
+                            ""
+                        }
                     </ul>
                     <div>
+                    
+                    {logInStatus 
+                    //if already logedIn then show log Out button inn navbar
+                    ? <>
+                        <button onClick={handleLogOut} className="btn btn-primary mx-2" aria-disabled="true">Log out</button>
+                     </>
+                    :
+                    //if not loged in show login and registration option in navbar
+                    <>
                         <Link className="btn btn-primary mx-2" role="button" to='/login'  aria-disabled="true">LogIn</Link>
                         <Link className="btn btn-primary mx-2" role="button" to='/signup' aria-disabled="true">SignUp</Link>
+                     </>
+                    }
                     </div>
                 </div>
             </div>

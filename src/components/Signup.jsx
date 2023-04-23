@@ -1,5 +1,8 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import LogInContext from '../context/loginStatus/loginContext';
+import UserContext from '../context/userDetails/userContext';
+
 const Signup = () => {
   const [credentials, setCredentials] = useState({
     name : "",
@@ -7,6 +10,12 @@ const Signup = () => {
     password : "",
     cpassword : "",
   });
+  const logInContext = useContext(LogInContext);
+  const {setLogInStatus} = logInContext;
+
+  const userContext = useContext(UserContext);
+  const {setUserId,getUserDetails} = userContext;
+
   const navigate = useNavigate();
   // update all credentials
    const handleChange = (e)=>{
@@ -36,7 +45,12 @@ const Signup = () => {
           cpassword : "",
         });
         if(json.msg === "user created") { // success = true || user created successfully
-           localStorage.getItem(json.token);
+           // store token
+           localStorage.setItem("authToken",json.token);
+           // set login status to true
+           setLogInStatus(true);
+           localStorage.setItem("userId",json.userId);
+           getUserDetails();
            navigate('/');
         }else if(json.msg === "user exists"){
           alert("This user already exists please login");
